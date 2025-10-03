@@ -26,20 +26,20 @@ export function TicketDetail({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-      case 'resolved': return 'bg-green-100 text-green-800 border border-green-200';
-      case 'closed': return 'bg-gray-100 text-gray-800 border border-gray-200';
+      case 'aberto': return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case 'em-andamento': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case 'resolvido': return 'bg-green-100 text-green-800 border border-green-200';
+      case 'fechado': return 'bg-gray-100 text-gray-800 border border-gray-200';
       default: return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800 border border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border border-orange-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border border-green-200';
+      case 'urgente': return 'bg-red-100 text-red-800 border border-red-200';
+      case 'alta': return 'bg-orange-100 text-orange-800 border border-orange-200';
+      case 'media': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case 'baixa': return 'bg-green-100 text-green-800 border border-green-200';
       default: return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
@@ -62,7 +62,27 @@ export function TicketDetail({
     setIsInternalComment(false);
   };
 
-  const itExecutives = ['john.doe@company.com', 'jane.smith@company.com', 'mike.wilson@company.com'];
+  const getStatusText = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'aberto': 'Aberto',
+      'em-andamento': 'Em Andamento',
+      'resolvido': 'Resolvido',
+      'fechado': 'Fechado'
+    };
+    return statusMap[status] || status;
+  };
+
+  const getPriorityText = (priority: string) => {
+    const priorityMap: { [key: string]: string } = {
+      'urgente': 'Urgente',
+      'alta': 'Alta',
+      'media': 'Média',
+      'baixa': 'Baixa'
+    };
+    return priorityMap[priority] || priority;
+  };
+
+  const itExecutives = ['joao.silva@empresa.com', 'maria.santos@empresa.com', 'carlos.oliveira@empresa.com'];
 
   // Filter comments based on user role
   const visibleComments = ticket.comments.filter(comment => {
@@ -85,10 +105,10 @@ export function TicketDetail({
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{ticket.title}</h1>
           <div className="flex items-center gap-4">
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(ticket.status)}`}>
-              {ticket.status.replace('-', ' ')}
+              {getStatusText(ticket.status)}
             </span>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(ticket.priority)}`}>
-              {ticket.priority}
+              {getPriorityText(ticket.priority)}
             </span>
           </div>
         </div>
@@ -146,7 +166,7 @@ export function TicketDetail({
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   />
                   
                   <div className="flex items-center justify-between">
@@ -231,12 +251,12 @@ export function TicketDetail({
                   <select
                     value={ticket.status}
                     onChange={(e) => onStatusUpdate(ticket.id, e.target.value as Ticket['status'])}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="open">Aberto</option>
-                    <option value="in-progress">Em Progresso</option>
-                    <option value="resolved">Resolvido</option>
-                    <option value="closed">Fechado</option>
+                    <option value="aberto">Aberto</option>
+                    <option value="em-andamento">Em Andamento</option>
+                    <option value="resolvido">Resolvido</option>
+                    <option value="fechado">Fechado</option>
                   </select>
                 </div>
 
@@ -245,7 +265,7 @@ export function TicketDetail({
                     <label className="text-sm font-medium text-gray-700">Designar para</label>
                     <select 
                       onChange={(e) => onAssignTicket(ticket.id, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       defaultValue=""
                     >
                       <option value="">Selecionar responsável</option>
@@ -268,7 +288,7 @@ export function TicketDetail({
                 <div>
                   <h4 className="font-medium text-gray-900 mb-1">Necessita de ajuda urgente?</h4>
                   <p className="text-sm text-gray-600 mb-2">
-                    Se precisar de ajuda urgente, entre em contato diretamente com o TI suporteTi@email.com.br!
+                    Se precisar de ajuda urgente, entre em contato diretamente com o TI suporteTi@empresa.com!
                   </p>
                 </div>
               </div>

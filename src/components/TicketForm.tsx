@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { AlertCircle, Plus } from 'lucide-react';
 
 export interface Ticket {
   id: string;
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  priority: 'baixa' | 'media' | 'alta' | 'urgente';
   category: string;
-  status: 'open' | 'in-progress' | 'resolved' | 'closed';
+  status: 'aberto' | 'em-andamento' | 'resolvido' | 'fechado';
   submittedBy: string;
   assignedTo?: string;
   createdAt: Date;
@@ -29,13 +28,13 @@ interface TicketFormProps {
 export function TicketForm({ onSubmit, userEmail }: TicketFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
+  const [priority, setPriority] = useState<'baixa' | 'media' | 'alta' | 'urgente'>('media');
   const [category, setCategory] = useState('');
 
   const categories = [
-    'Hardware',
+    'Problemas de Hardware',
+    'Conectividade de Rede',
     'Software',
-    'Conexão com Internet',
     'Acessos',
     'Sistemas',
     'Segurança',
@@ -59,28 +58,8 @@ export function TicketForm({ onSubmit, userEmail }: TicketFormProps) {
     // Reset form
     setTitle('');
     setDescription('');
-    setPriority('medium');
+    setPriority('media');
     setCategory('');
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'text-red-600';
-      case 'high': return 'text-orange-500';
-      case 'medium': return 'text-yellow-500';
-      case 'low': return 'text-green-500';
-      default: return 'text-gray-500';
-    }
-  };
-
-  const getPriorityDotColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'bg-red-600';
-      case 'high': return 'bg-orange-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'low': return 'bg-green-500';
-      default: return 'bg-gray-500';
-    }
   };
 
   return (
@@ -88,7 +67,9 @@ export function TicketForm({ onSubmit, userEmail }: TicketFormProps) {
       {/* Card Header */}
       <div className="px-6 py-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <Plus className="h-5 w-5" />
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
           Envie um novo chamado para a equipe de TI
         </h2>
       </div>
@@ -108,7 +89,7 @@ export function TicketForm({ onSubmit, userEmail }: TicketFormProps) {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Descreva brevemente a sua demanda"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -123,7 +104,7 @@ export function TicketForm({ onSubmit, userEmail }: TicketFormProps) {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Selecione a categoria</option>
                 {categories.map((cat) => (
@@ -141,21 +122,13 @@ export function TicketForm({ onSubmit, userEmail }: TicketFormProps) {
               <select
                 id="priority"
                 value={priority}
-                onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high' | 'urgent')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onChange={(e) => setPriority(e.target.value as 'baixa' | 'media' | 'alta' | 'urgente')}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="low">
-                  Baixo
-                </option>
-                <option value="medium">
-                  Médio
-                </option>
-                <option value="high">
-                  Alto
-                </option>
-                <option value="urgent">
-                  Urgente
-                </option>
+                <option value="baixa">Baixa</option>
+                <option value="media">Média</option>
+                <option value="alta">Alta</option>
+                <option value="urgente">Urgente</option>
               </select>
             </div>
           </div>
@@ -172,22 +145,14 @@ export function TicketForm({ onSubmit, userEmail }: TicketFormProps) {
               placeholder="Descrição detalhada da sua demanda"
               rows={6}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
-          </div>
-
-          {/* Info Alert */}
-          <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <AlertCircle className="h-4 w-4 text-blue-600 flex-shrink-0" />
-            <p className="text-sm text-blue-800">
-              Por favor, descreva sua demanda de forma clara e forneça as informações relevantes.
-            </p>
           </div>
 
           {/* Submit Button */}
           <button 
             type="submit" 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200"
           >
             Enviar chamado
           </button>

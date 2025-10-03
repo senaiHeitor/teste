@@ -20,8 +20,8 @@ export function TicketList({
   onAssignTicket 
 }: TicketListProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('todos');
+  const [priorityFilter, setPriorityFilter] = useState<string>('todos');
 
   const filteredTickets = tickets.filter(ticket => {
     // Filter by user role
@@ -36,12 +36,12 @@ export function TicketList({
     }
 
     // Filter by status
-    if (statusFilter !== 'all' && ticket.status !== statusFilter) {
+    if (statusFilter !== 'todos' && ticket.status !== statusFilter) {
       return false;
     }
 
     // Filter by priority
-    if (priorityFilter !== 'all' && ticket.priority !== priorityFilter) {
+    if (priorityFilter !== 'todos' && ticket.priority !== priorityFilter) {
       return false;
     }
 
@@ -50,20 +50,20 @@ export function TicketList({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-      case 'resolved': return 'bg-green-100 text-green-800 border border-green-200';
-      case 'closed': return 'bg-gray-100 text-gray-800 border border-gray-200';
+      case 'aberto': return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case 'em-andamento': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case 'resolvido': return 'bg-green-100 text-green-800 border border-green-200';
+      case 'fechado': return 'bg-gray-100 text-gray-800 border border-gray-200';
       default: return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800 border border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border border-orange-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border border-green-200';
+      case 'urgente': return 'bg-red-100 text-red-800 border border-red-200';     // Vermelho
+      case 'alta': return 'bg-orange-100 text-orange-800 border border-orange-200'; // Laranja
+      case 'media': return 'bg-green-100 text-green-800 border border-green-200';   // Verde
+      case 'baixa': return 'bg-gray-100 text-gray-800 border border-gray-200';      // Cinza
       default: return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
@@ -78,7 +78,27 @@ export function TicketList({
     }).format(date);
   };
 
-  const itExecutives = ['john.doe@company.com', 'jane.smith@company.com', 'mike.wilson@company.com'];
+  const getStatusText = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'aberto': 'Aberto',
+      'em-andamento': 'Em Andamento',
+      'resolvido': 'Resolvido',
+      'fechado': 'Fechado'
+    };
+    return statusMap[status] || status;
+  };
+
+  const getPriorityText = (priority: string) => {
+    const priorityMap: { [key: string]: string } = {
+      'urgente': 'Urgente',
+      'alta': 'Alta',
+      'media': 'Média',
+      'baixa': 'Baixa'
+    };
+    return priorityMap[priority] || priority;
+  };
+
+  const itExecutives = ['joao.silva@empresa.com', 'maria.santos@empresa.com', 'carlos.oliveira@empresa.com'];
 
   return (
     <div className="space-y-6">
@@ -99,32 +119,32 @@ export function TicketList({
                 placeholder="Pesquisar chamados..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             
             <select 
               value={statusFilter} 
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">Todos os status</option>
-              <option value="open">Aberto</option>
-              <option value="in-progress">Em Progresso</option>
-              <option value="resolved">Resolvido</option>
-              <option value="closed">Fechado</option>
+              <option value="todos">Todos os status</option>
+              <option value="aberto">Aberto</option>
+              <option value="em-andamento">Em Andamento</option>
+              <option value="resolvido">Resolvido</option>
+              <option value="fechado">Fechado</option>
             </select>
 
             <select 
               value={priorityFilter} 
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="all">Todas Prioridades</option>
-              <option value="urgent">Urgente</option>
-              <option value="high">Alto</option>
-              <option value="medium">Médio</option>
-              <option value="low">Baixo</option>
+              <option value="todos">Todas Prioridades</option>
+              <option value="urgente">Urgente</option>
+              <option value="alta">Alta</option>
+              <option value="media">Média</option>
+              <option value="baixa">Baixa</option>
             </select>
 
             <div className="flex items-center justify-between">
@@ -163,10 +183,10 @@ export function TicketList({
                     <div className="flex items-center gap-3 mb-3 flex-wrap">
                       <h3 className="font-medium text-gray-900">{ticket.title}</h3>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
-                        {ticket.status.replace('-', ' ')}
+                        {getStatusText(ticket.status)}
                       </span>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
-                        {ticket.priority}
+                        {getPriorityText(ticket.priority)}
                       </span>
                     </div>
                     
@@ -199,19 +219,19 @@ export function TicketList({
                       <select
                         value={ticket.status}
                         onChange={(e) => onStatusUpdate(ticket.id, e.target.value as Ticket['status'])}
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       >
-                        <option value="open">Aberto</option>
-                        <option value="in-progress">Em Progresso</option>
-                        <option value="resolved">Resolvido</option>
-                        <option value="closed">Fechado</option>
+                        <option value="aberto">Aberto</option>
+                        <option value="em-andamento">Em Andamento</option>
+                        <option value="resolvido">Resolvido</option>
+                        <option value="fechado">Fechado</option>
                       </select>
                       
                       {!ticket.assignedTo && (
                         <select 
                           onChange={(e) => onAssignTicket(ticket.id, e.target.value)}
                           defaultValue=""
-                          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                         >
                           <option value="">Atribuir</option>
                           {itExecutives.map((exec) => (

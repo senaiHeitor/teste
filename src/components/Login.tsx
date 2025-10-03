@@ -16,6 +16,25 @@ export function Login({ onLogin }: LoginProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
+  // Função para verificar a força da senha
+  const checkPasswordStrength = (password: string) => {
+    const checks = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+
+    const score = Object.values(checks).filter(Boolean).length;
+    
+    return {
+      checks,
+      score,
+      strength: score < 3 ? "fraca" : score < 5 ? "média" : "forte"
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -28,8 +47,10 @@ export function Login({ onLogin }: LoginProps) {
         alert("As senhas não coincidem!");
         return;
       }
-      if (password.length < 6) {
-        alert("A senha deve ter pelo menos 6 caracteres!");
+      
+      const passwordStrength = checkPasswordStrength(password);
+      if (passwordStrength.score < 3) {
+        alert("A senha é muito fraca! Use pelo menos 8 caracteres com letras maiúsculas, minúsculas, números e símbolos.");
         return;
       }
     } else {
@@ -56,6 +77,8 @@ export function Login({ onLogin }: LoginProps) {
     setPassword("");
     setConfirmPassword("");
   };
+
+  const passwordStrength = checkPasswordStrength(password);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 p-4">
@@ -127,13 +150,69 @@ export function Login({ onLogin }: LoginProps) {
               </label>
               <input
                 type="password"
-                placeholder={isRegistering ? "Mínimo 6 caracteres" : "••••••••"}
+                placeholder={isRegistering ? "Digite a sua senha" : "••••••••"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
                 className="w-full h-10 px-3 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:opacity-50 text-sm"
               />
+              
+              {/* Indicador de força da senha (apenas no cadastro) */}
+              {isRegistering && password && (
+                <div className="mt-2 space-y-2">
+                  {/* Barra de progresso */}
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((index) => (
+                      <div
+                        key={index}
+                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                          index <= passwordStrength.score
+                            ? passwordStrength.strength === "fraca"
+                              ? "bg-red-500"
+                              : passwordStrength.strength === "média"
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
+                            : "bg-gray-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Texto da força */}
+                  <div className="flex justify-between items-center">
+                    <span className={`text-xs font-medium ${
+                      passwordStrength.strength === "fraca" ? "text-red-600" :
+                      passwordStrength.strength === "média" ? "text-yellow-600" :
+                      "text-green-600"
+                    }`}>
+                      Senha {passwordStrength.strength}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {passwordStrength.score}/5
+                    </span>
+                  </div>
+                  
+                  {/* Requisitos */}
+                  <div className="grid grid-cols-2 gap-1 text-xs text-gray-600">
+                    <div className={`flex items-center gap-1 ${passwordStrength.checks.length ? "text-green-600" : "text-gray-400"}`}>
+                      <span>• 8+ caracteres</span>
+                    </div>
+                    <div className={`flex items-center gap-1 ${passwordStrength.checks.uppercase ? "text-green-600" : "text-gray-400"}`}>
+                      <span>• Letra maiúscula</span>
+                    </div>
+                    <div className={`flex items-center gap-1 ${passwordStrength.checks.lowercase ? "text-green-600" : "text-gray-400"}`}>
+                      <span>• Letra minúscula</span>
+                    </div>
+                    <div className={`flex items-center gap-1 ${passwordStrength.checks.number ? "text-green-600" : "text-gray-400"}`}>
+                      <span>• Número</span>
+                    </div>
+                    <div className={`flex items-center gap-1 ${passwordStrength.checks.special ? "text-green-600" : "text-gray-400"}`}>
+                      <span>• Símbolo</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Confirmar Senha (apenas cadastro) */}
@@ -149,8 +228,15 @@ export function Login({ onLogin }: LoginProps) {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={isLoading}
-                  className="w-full h-10 px-3 bg-white border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:opacity-50 text-sm"
+                  className={`w-full h-10 px-3 bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-50 text-sm ${
+                    confirmPassword && password !== confirmPassword
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-300 focus:border-blue-500"
+                  }`}
                 />
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-red-600 text-xs mt-1">As senhas não coincidem</p>
+                )}
               </div>
             )}
 
@@ -229,9 +315,9 @@ export function Login({ onLogin }: LoginProps) {
             </div>
             
             {!isRegistering && (
-              <a href="#" className="text-blue-600 hover:text-blue-800 text-xs block">
+              <a href="#" className="text-blue-600 hover:text-blue-800 text-[14px] block">
                 Esqueceu sua senha?
-              </a>
+              </a>  
             )}
           </div>
         </div>

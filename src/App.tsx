@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { TicketForm, Ticket } from './components/TicketForm';
 import { TicketList } from './components/TicketList';
 import { TicketDetail } from './components/TicketDetail';
+import { TicketDashboard } from './components/TicketDashboard';
 import { 
   Ticket as TicketIcon,
   Clock,
@@ -20,31 +21,31 @@ export default function App() {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
 
-  // Mock inicial
+  // Mock inicial em português
   useEffect(() => {
     const mockTickets: Ticket[] = [
       {
         id: '1',
-        title: 'Computer won\'t start after Windows update',
-        description: 'After the latest Windows update last night, my computer shows a blue screen on startup...',
-        priority: 'high',
-        category: 'Hardware Issues',
-        status: 'open',
-        submittedBy: 'user@company.com',
-        assignedTo: 'john.doe@company.com',
+        title: 'Computador não liga após atualização do Windows',
+        description: 'Após a última atualização do Windows ontem à noite, meu computador mostra uma tela azul ao iniciar...',
+        priority: 'alta',
+        category: 'Problemas de Hardware',
+        status: 'aberto',
+        submittedBy: 'usuario@empresa.com',
+        assignedTo: 'joao.silva@empresa.com',
         createdAt: new Date('2024-01-15T09:30:00'),
         updatedAt: new Date('2024-01-15T10:15:00'),
         comments: []
       },
       {
         id: '2',
-        title: 'Unable to access shared network drive',
-        description: 'I can\'t access the \\\\server\\shared folder...',
-        priority: 'medium',
-        category: 'Network Connectivity',
-        status: 'in-progress',
-        submittedBy: 'alice.johnson@company.com',
-        assignedTo: 'jane.smith@company.com',
+        title: 'Não consigo acessar unidade de rede compartilhada',
+        description: 'Não consigo acessar a pasta \\\\servidor\\compartilhada...',
+        priority: 'media',
+        category: 'Conectividade de Rede',
+        status: 'em-andamento',
+        submittedBy: 'alice.silva@empresa.com',
+        assignedTo: 'maria.santos@empresa.com',
         createdAt: new Date('2024-01-14T14:20:00'),
         updatedAt: new Date('2024-01-15T08:45:00'),
         comments: []
@@ -71,7 +72,7 @@ export default function App() {
     const newTicket: Ticket = {
       ...ticketData,
       id: Date.now().toString(),
-      status: 'open',
+      status: 'aberto',
       createdAt: new Date(),
       updatedAt: new Date(),
       comments: []
@@ -90,7 +91,15 @@ export default function App() {
     if (selectedTicket?.id === ticketId) {
       setSelectedTicket(prev => prev ? { ...prev, status, updatedAt: new Date() } : null);
     }
-    toast.success(`Status do chamado atualizado para ${status.replace('-', ' ')}`);
+    
+    // Mensagem em português
+    const statusMessages = {
+      'aberto': 'aberto',
+      'em-andamento': 'em andamento', 
+      'resolvido': 'resolvido',
+      'fechado': 'fechado'
+    };
+    toast.success(`Status do chamado atualizado para ${statusMessages[status]}`);
   };
 
   const handleAssignTicket = (ticketId: string, assignee: string) => {
@@ -132,10 +141,10 @@ export default function App() {
   // Dashboard stats
   const stats = {
     total: tickets.length,
-    open: tickets.filter(t => t.status === 'open').length,
-    inProgress: tickets.filter(t => t.status === 'in-progress').length,
-    resolved: tickets.filter(t => t.status === 'resolved').length,
-    myTickets: userRole === 'client' 
+    aberto: tickets.filter(t => t.status === 'aberto').length,
+    emAndamento: tickets.filter(t => t.status === 'em-andamento').length,
+    resolvido: tickets.filter(t => t.status === 'resolvido').length,
+    meusChamados: userRole === 'client' 
       ? tickets.filter(t => t.submittedBy === userEmail).length 
       : tickets.filter(t => t.assignedTo === userEmail).length
   };
@@ -178,7 +187,7 @@ export default function App() {
             <Clock className="h-6 w-6 text-yellow-600 mr-3" />
             <div>
               <p className="text-sm text-gray-600">Aberto</p>
-              <p className="text-2xl font-semibold">{stats.open}</p>
+              <p className="text-2xl font-semibold">{stats.aberto}</p>
             </div>
           </div>
         </div>
@@ -186,8 +195,8 @@ export default function App() {
           <div className="flex items-center p-6">
             <TrendingUp className="h-6 w-6 text-orange-600 mr-3" />
             <div>
-              <p className="text-sm text-gray-600">Em progresso</p>
-              <p className="text-2xl font-semibold">{stats.inProgress}</p>
+              <p className="text-sm text-gray-600">Em andamento</p>
+              <p className="text-2xl font-semibold">{stats.emAndamento}</p>
             </div>
           </div>
         </div>
@@ -196,11 +205,22 @@ export default function App() {
             <CheckCircle className="h-6 w-6 text-green-600 mr-3" />
             <div>
               <p className="text-sm text-gray-600">Resolvido</p>
-              <p className="text-2xl font-semibold">{stats.resolved}</p>
+              <p className="text-2xl font-semibold">{stats.resolvido}</p>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Dashboard do analista de TI - SÓ APARECE PARA ANALISTAS */}
+      {userRole === 'it-executive' && (
+        <div className="mt-8">
+          <TicketDashboard
+            tickets={tickets}
+            userRole={userRole}
+            onTicketSelect={handleTicketSelect}
+          />
+        </div>
+      )}
     </div>
   );
 
