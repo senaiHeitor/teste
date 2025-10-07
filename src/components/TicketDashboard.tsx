@@ -126,22 +126,25 @@ export function TicketDashboard({ tickets, userRole, onTicketSelect }: TicketDas
     });
   };
 
+  // CORES CORRIGIDAS - MESMAS DO TICKETLIST E TICKETDETAIL
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'aberto': return 'bg-yellow-100 text-yellow-800';
-      case 'em-andamento': return 'bg-blue-100 text-blue-800';
-      case 'resolvido': return 'bg-green-100 text-green-800';
-      case 'fechado': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'aberto': return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case 'em-andamento': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case 'resolvido': return 'bg-green-100 text-green-800 border border-green-200';
+      case 'fechado': return 'bg-gray-100 text-gray-800 border border-gray-200';
+      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
 
+  // CORES CORRIGIDAS - MESMAS DO TICKETLIST E TICKETDETAIL
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'alta': return 'bg-red-100 text-red-800';
-      case 'media': return 'bg-orange-100 text-orange-800';
-      case 'baixa': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'urgente': return 'bg-red-100 text-red-800 border border-red-200';
+      case 'alta': return 'bg-orange-100 text-orange-800 border border-orange-200';
+      case 'media': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case 'baixa': return 'bg-green-100 text-green-800 border border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
 
