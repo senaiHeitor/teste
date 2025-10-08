@@ -2,10 +2,10 @@ import { useState } from "react";
 import logoImage from "../assets/icon test blue simple.png";
 
 interface LoginProps {
-  onLogin: (email: string, role: "client" | "it-executive") => void;
+  onLogin: (email: string, role: "client" | "analyst") => void;
 }
 
-type UserRole = "client" | "it-executive";
+type UserRole = "client" | "analyst";
 
 // Configuração da API
 const API_BASE = "http://localhost:8000";
@@ -103,7 +103,7 @@ export function Login({ onLogin }: LoginProps) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            user: email, // Seu backend espera 'user' no login
+            email: email, // Seu backend espera 'user' no login
             password: password
           })
         });
@@ -334,9 +334,9 @@ export function Login({ onLogin }: LoginProps) {
                 
                 <button
                   type="button"
-                  onClick={() => setRole("it-executive")}
+                  onClick={() => setRole("analyst")}
                   className={`p-3 rounded-lg border-2 transition-all duration-200 ${
-                    role === "it-executive" 
+                    role === "analyst" 
                       ? "border-blue-500 bg-blue-500/20 text-blue-700" 
                       : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:bg-blue-50"
                   }`}

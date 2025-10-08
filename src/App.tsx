@@ -15,7 +15,7 @@
 
   export default function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userRole, setUserRole] = useState<'client' | 'it-executive'>('client');
+    const [userRole, setUserRole] = useState<'client' | 'analyst'>('client');
     const [userEmail, setUserEmail] = useState('');
     const [activeView, setActiveView] = useState<'dashboard' | 'tickets' | 'submit' | 'detail'>('dashboard');
     const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -221,7 +221,7 @@
         </div>
 
         {/* Dashboard do analista de TI - SÓ APARECE PARA ANALISTAS */}
-        {userRole === 'it-executive' && (
+        {userRole === 'analyst' && (
           <div className="mt-8">
             <TicketDashboard
               tickets={tickets}

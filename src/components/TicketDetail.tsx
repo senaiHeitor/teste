@@ -22,7 +22,7 @@ import { Ticket } from './TicketForm';
 
 interface TicketDetailProps {
   ticket: Ticket;
-  userRole: 'client' | 'it-executive';
+  userRole: 'client' | 'analyst';
   userEmail: string;
   onBack: () => void;
   onAddComment: (ticketId: string, comment: string, isInternal: boolean) => void;
@@ -218,7 +218,7 @@ export function TicketDetail({
 
   // Filter comments based on user role
   const visibleComments = ticket.comments.filter(comment => {
-    if (userRole === 'it-executive') return true;
+    if (userRole === 'analyst') return true;
     return !comment.isInternal;
   });
 
@@ -402,7 +402,7 @@ export function TicketDetail({
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   />
                   <div className="flex items-center justify-between">
-                    {userRole === 'it-executive' && (
+                    {userRole === 'analyst' && (
                       <label className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -430,7 +430,7 @@ export function TicketDetail({
           {/* Coluna da Direita - Ações e Status */}
           <div className="space-y-6">
             {/* Card de Ações */}
-            {userRole === 'it-executive' && (
+            {userRole === 'analyst' && (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Ações do Chamado</h3>
                 
