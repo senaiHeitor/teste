@@ -7,6 +7,9 @@ interface LoginProps {
 
 type UserRole = "client" | "it-executive";
 
+// Configuração da API
+const API_BASE = "http://localhost:8000";
+
 export function Login({ onLogin }: LoginProps) {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -15,6 +18,7 @@ export function Login({ onLogin }: LoginProps) {
   const [role, setRole] = useState<UserRole>("client");
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [error, setError] = useState("");
 
   // Função para verificar a força da senha
   const checkPasswordStrength = (password: string) => {
@@ -37,35 +41,92 @@ export function Login({ onLogin }: LoginProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     
+    // Validações locais
     if (isRegistering) {
       if (!nome || !email || !password || !confirmPassword) {
-        alert("Preencha todos os campos!");
+        setError("Preencha todos os campos!");
         return;
       }
       if (password !== confirmPassword) {
-        alert("As senhas não coincidem!");
+        setError("As senhas não coincidem!");
         return;
       }
       
       const passwordStrength = checkPasswordStrength(password);
       if (passwordStrength.score < 3) {
-        alert("A senha é muito fraca! Use pelo menos 8 caracteres com letras maiúsculas, minúsculas, números e símbolos.");
+        setError("A senha é muito fraca! Use pelo menos 8 caracteres com letras maiúsculas, minúsculas, números e símbolos.");
         return;
       }
     } else {
       if (!email || !password) {
-        alert("Preencha todos os campos!");
+        setError("Preencha todos os campos!");
         return;
       }
     }
 
     setIsLoading(true);
+    
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onLogin(email, role);
-    } catch (error) {
-      console.error("Erro:", error);
+      if (isRegistering) {
+        // 🔄 CADASTRO - Chamando a API REAL
+        const response = await fetch(`${API_BASE}/users/register`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: nome,
+            email: email,
+            password: password,
+            user_type: role
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Erro no cadastro');
+        }
+
+        console.log("✅ Usuário cadastrado via API");
+        
+        // Após cadastrar, faz login automaticamente (ainda mockado)
+        // Aqui você poderia chamar a API de login também se quiser
+        onLogin(email, role);
+        
+      } else {
+        // 🔄 LOGIN - Chamando a API REAL
+        const response = await fetch(`${API_BASE}/users/login`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user: email, // Seu backend espera 'user' no login
+            password: password
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || 'Erro no login');
+        }
+
+        const result = await response.json();
+        console.log("✅ Login realizado via API - Token:", result.token);
+        
+        // Salva o token no localStorage (opcional)
+        if (result.token) {
+          localStorage.setItem('token', result.token);
+        }
+        
+        // Continua com o fluxo normal do frontend
+        onLogin(email, role);
+      }
+    } catch (error: any) {
+      console.error("❌ Erro na autenticação:", error);
+      setError(error.message || "Erro ao processar solicitação");
     } finally {
       setIsLoading(false);
     }
@@ -76,6 +137,7 @@ export function Login({ onLogin }: LoginProps) {
     setNome("");
     setPassword("");
     setConfirmPassword("");
+    setError("");
   };
 
   const passwordStrength = checkPasswordStrength(password);
@@ -104,6 +166,13 @@ export function Login({ onLogin }: LoginProps) {
             {isRegistering ? "Crie sua conta" : "Entre no seu painel"}
           </p>
         </div>
+
+        {/* Mensagem de Erro */}
+        {error && (
+          <div className="mx-8 mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 text-sm text-center">{error}</p>
+          </div>
+        )}
 
         {/* Formulário Compacto */}
         <div className="px-8 pb-6">

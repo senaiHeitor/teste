@@ -10,6 +10,7 @@ export interface Ticket {
   status: 'aberto' | 'em-andamento' | 'resolvido' | 'fechado';
   submittedBy: string;
   assignedTo?: string;
+  assignedAt?: Date; // Nova propriedade - quando foi atribuído
   createdAt: Date;
   updatedAt: Date;
   comments: Array<{
@@ -28,10 +29,11 @@ export interface Ticket {
   }>;
   equipmentNumber?: string;
   location?: string;
+  slaDeadline?: Date;
 }
 
 interface TicketFormProps {
-  onSubmit: (ticket: Omit<Ticket, 'id' | 'status' | 'createdAt' | 'updatedAt' | 'comments'>) => void;
+  onSubmit: (ticket: Omit<Ticket, 'id' | 'status' | 'createdAt' | 'updatedAt' | 'comments' | 'assignedAt' | 'slaDeadline'>) => void;
   userEmail: string;
 }
 
